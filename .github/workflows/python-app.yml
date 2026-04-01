@@ -37,3 +37,8 @@ jobs:
     - name: Test with pytest
       run: |
         pytest test-add.py
+        steps:
+   #- uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag my-app:$(date +%s)
+
