@@ -1,4 +1,2 @@
-numpy
-pandas
-matplotlib
-plotly
+flask
+pyodbc

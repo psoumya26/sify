@@ -1,21 +1,26 @@
-# Use an official Python runtime as a parent image
-FROM python:3.12.13-alpine3.22
+FROM python:3.9-slim
 
-# Set the working directory in the container
+# The core issue last time was missing the native Linux ODBC drivers!
+# These steps download the Microsoft keys and install the ODBC Driver 17 for SQL Server on Debian.
+RUN apt-get update && apt-get install -y \
+    curl \
+    apt-transport-https \
+    gnupg2 \
+    unixodbc-dev
+
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
+    && curl -fsSL https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list
+
+RUN apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17
+
+# Setup App
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the current directory contents into the container at /app
-COPY . .
+COPY app.py .
 
-# Run demo.py when the container launches
-CMD ["python", "demo.py"]
-#build docker file
-#docker build -t my-app  .
-#run docker file
-#p
+EXPOSE 5000
 
-
-#  build---> test---> dockerize--->deploy
+CMD ["python", "app.py"]
