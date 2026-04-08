@@ -42,3 +42,6 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag my-app:$(date +%s)
 
+  #- uses: actions/checkout@v4
+    - name:run docker compose file
+      run: docker compose up
